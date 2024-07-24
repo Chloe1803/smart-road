@@ -1,0 +1,64 @@
+{
+    // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+    // Pointez pour afficher la description des attributs existants.
+    // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'smart_road'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=smart-road"
+                ],
+                "filter": {
+                    "name": "smart_road",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'smart-road'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=smart-road",
+                    "--package=smart-road"
+                ],
+                "filter": {
+                    "name": "smart-road",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'smart-road'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=smart-road",
+                    "--package=smart-road"
+                ],
+                "filter": {
+                    "name": "smart-road",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

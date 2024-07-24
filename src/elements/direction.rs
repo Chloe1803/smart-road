@@ -37,19 +37,24 @@ impl Cardinal {
         }
     }
 
-    // assign a number to each Cardinal
-    pub fn to_int(&self) -> usize {
-        match self {
-            Cardinal::N => 0,
-            Cardinal::S => 1,
-            Cardinal::W => 2,
-            Cardinal::E => 3
-        }
-    }
 }
 
+#[derive(Debug, Eq, PartialEq, PartialOrd, Copy, Clone, Hash)]
 pub enum Direction {
     Right,
     Straight,
     Left
+}
+
+impl Direction {
+    pub fn random() -> Direction {
+        let x = rand::thread_rng().gen_range(0..3);
+        match x {
+            0 => Direction::Right,
+            1 => Direction::Straight,
+            2 => Direction::Left,
+            _ => Direction::Right,
+        }
+    }
+    
 }

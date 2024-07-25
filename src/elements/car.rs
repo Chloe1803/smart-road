@@ -30,7 +30,7 @@ impl Car {
         let turn_x : i32;
         let turn_y : i32; 
 
-        let direction = Direction::Right;
+        let direction = Direction::random();
         let cardinal_to : Cardinal;
 
         // calculate initial position

@@ -35,23 +35,28 @@ impl Simulation {
             
             car.borrow_mut().run();
    
-            if car.borrow().direction != Direction::Right {
-                if car.borrow().is_in_intersection(&self.smart_intersection_system.area){
-                    if !car.borrow().was_in_intersection {
-                        car.borrow_mut().was_in_intersection = true;
+            if car.borrow().is_in_intersection(&self.smart_intersection_system.area){
+                if !car.borrow().was_in_intersection {
+                    car.borrow_mut().was_in_intersection = true;
+
+                    if car.borrow().direction != Direction::Right{
                         self.smart_intersection_system.car_entering(car.clone())  
                     }
+                        
+                }
 
+            }else{
+                if car.borrow().was_in_intersection && !car.borrow().passed {
+                    car.borrow_mut().passed = true;
 
-                }else{
-                    if car.borrow().was_in_intersection && !car.borrow().passed {
-                        car.borrow_mut().passed = true;
+                    if car.borrow().direction != Direction::Right{
                         self.smart_intersection_system.car_exiting(car.clone())
                     }
                 }
             }
+            
 
-            if (car.borrow().passed && car.borrow().is_out()) || (car.borrow().direction == Direction::Right && car.borrow().is_out()) {
+            if (car.borrow().passed && car.borrow().is_out())  {
                 let exiting_time = car.borrow().timestamp.unwrap().elapsed().as_secs() as usize;
 
                 if exiting_time < self.stats.min_time {
@@ -71,7 +76,6 @@ impl Simulation {
                     self.stats.max_velocity = velocity
                 }
 
-                println!("time : {}, distance: {}", exiting_time, car.borrow().distance);
             }
         }
         

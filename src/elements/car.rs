@@ -54,7 +54,7 @@ impl Car {
                     }
                 }
 
-                pos_y = - CAR_SIZE / 2;
+                pos_y = - CAR_LENGTH / 2;
                 turn_x = pos_x;              
             }
             Cardinal::S => {
@@ -75,7 +75,7 @@ impl Car {
                         turn_y = HEIGHT/2 - ROAD_WIDTH / 12;
                     }
                 }
-                pos_y = HEIGHT + CAR_SIZE / 2;
+                pos_y = HEIGHT + CAR_LENGTH / 2;
                 turn_x = pos_x;            
                 
             }
@@ -97,7 +97,7 @@ impl Car {
                         turn_x = WIDTH/2 + ROAD_WIDTH/12;
                     }
                 }
-                pos_x= - CAR_SIZE / 2;
+                pos_x= - CAR_LENGTH / 2;
                 turn_y = pos_y;
             }
             Cardinal::E => {
@@ -118,7 +118,7 @@ impl Car {
                         turn_x = WIDTH/2 - ROAD_WIDTH/12;
                     }
                 }
-                pos_x= WIDTH + CAR_SIZE/2;
+                pos_x= WIDTH + CAR_LENGTH/2;
                 turn_y = pos_y;
             }
         }
@@ -127,20 +127,13 @@ impl Car {
         turning_point = (turn_x, turn_y);
 
         // calculate color and store it so that we don't do that every frame 
-        let color;
-        if Cardinal::opposite(from, cardinal_to) {
-            color = 0;
-        } else if Cardinal::right(from, cardinal_to) {
-            color = 1;
-        } else {
-            color = 2;
-        }
+        let color: u8;
         //speed
         let speed:i32;
         match direction {
-            Direction::Right => speed = SPEED_SLOW,
-            Direction::Left => speed = SPEED_FAST,
-            Direction::Straight => speed = SPEED_MEDIUM
+            Direction::Right => {speed = SPEED_SLOW; color= 1}
+            Direction::Left => {speed = SPEED_FAST; color = 2 }
+            Direction::Straight => {speed = SPEED_MEDIUM; color = 3}
         }
 
         return Car{
@@ -168,7 +161,7 @@ impl Car {
 
     // calculates distance from car positions. formula is wrong, but simplified for faster calculus
     pub fn distance_from_pos(v1: (i32,i32), v2: (i32, i32)) -> i32 {
-        std::cmp::max((v1.0 - v2.0).abs(), (v1.1 - v2.1).abs()) - CAR_SIZE
+        std::cmp::max((v1.0 - v2.0).abs(), (v1.1 - v2.1).abs()) - CAR_LENGTH
     }
 
     // move the car
@@ -223,10 +216,10 @@ impl Car {
     // true if car should be removed from simulation
     pub fn is_out(&self) -> bool {
         match self.to {
-            Cardinal::N => self.pos.1 <= -CAR_SIZE / 2,
-            Cardinal::S => self.pos.1 >= HEIGHT + CAR_SIZE / 2,
-            Cardinal::W => self.pos.0 <= -CAR_SIZE / 2,
-            Cardinal::E => self.pos.0 >= WIDTH + CAR_SIZE / 2
+            Cardinal::N => self.pos.1 <= -CAR_LENGTH / 2,
+            Cardinal::S => self.pos.1 >= HEIGHT + CAR_LENGTH / 2,
+            Cardinal::W => self.pos.0 <= -CAR_LENGTH / 2,
+            Cardinal::E => self.pos.0 >= WIDTH + CAR_LENGTH / 2
         }
     }
 

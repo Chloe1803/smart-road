@@ -105,7 +105,7 @@ impl Simulation {
     // we decide to stop a car if its next position is within an other car's security range,
     // and if the distance between those cars was actually reduced after moving.
     // NOTE : not the best way to do that
-    pub fn check_security_limit(&mut self) {
+    pub fn check_security_limit(&self) {
         for i in 0..self.cars.len() {
             let mut car = self.cars[i].borrow_mut();
     

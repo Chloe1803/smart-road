@@ -84,8 +84,6 @@ impl  SmartIntersectionSystem  {
             
             // Vérifie si la voiture peut traverser toutes les zones verrouillées
             if routes.iter().all(|&(x, y)| {
-                if self.locked_areas[x][y].tickets.len()>=1{
-                }
                 if let Some((current_car_id, _)) = self.locked_areas[x][y].current_ticket {
                     current_car_id == car.borrow().id      
                 } else {

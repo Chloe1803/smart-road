@@ -2,6 +2,8 @@
 use crate::constants::*;
 use crate::elements::simulation::*;
 use crate::elements::car::*;
+use crate::elements::direction::*;
+use crate::Sprites;
 
 
 extern crate sdl2; 
@@ -11,7 +13,7 @@ use sdl2::rect::{Point, Rect};
 use sdl2::render::Canvas;
 
 use sdl2::video::Window;
-use std::path::Path;
+
 
 // draw simulation background
 pub fn draw_background(canvas: &mut Canvas<Window>) {
@@ -65,23 +67,24 @@ pub fn draw_background(canvas: &mut Canvas<Window>) {
 }
 
 // draw all elements of the simulation to the canvas
-pub fn draw_simulation(canvas: &mut Canvas<Window>, simulation: &Simulation) {
+pub fn draw_simulation(canvas: &mut Canvas<Window>, simulation: &Simulation, sprites :&Sprites) {
     // draw cars
     for car in &simulation.cars {
-        draw_car(&car.borrow(), canvas);
+        draw_car(&car.borrow(), canvas, sprites);
     }
 }
 
 
 // draw a car on the canvas
-pub fn draw_car(car: &Car, canvas: &mut Canvas<Window>) {
-    match car.color {
-        0 => {canvas.set_draw_color(Color::RGB(255,0,0));}
-        1 => {canvas.set_draw_color(Color::RGB(0,255,0));}
-        2 => {canvas.set_draw_color(Color::RGB(0,0,255));}
-        _ => {}
-    }
-    canvas.fill_rect(Rect::new((car.pos.0 - CAR_SIZE / 2) as i32, (car.pos.1 - CAR_SIZE / 2) as i32, CAR_SIZE as u32, CAR_SIZE as u32)).unwrap();
+pub fn draw_car(car: &Car, canvas: &mut Canvas<Window>, sprites :&Sprites) {
+
+
+
+    let (width, height, dir) = get_orientation(car);
+
+    let rect = Rect::new((car.pos.0 - width / 2) as i32, (car.pos.1 - height / 2) as i32, width as u32, height as u32);
+
+    canvas.copy(&sprites.get_car_sprite(car.color as u32, dir), None, rect).unwrap();
 }
 
 fn draw_dashed_line(canvas: &mut sdl2::render::Canvas<sdl2::video::Window>, start: Point, end: Point, dash_length: i32) -> Result<(), String> {
@@ -137,3 +140,65 @@ pub fn draw_stats(canvas: &mut Canvas<Window>, stats: String) {
     // Present the canvas
     canvas.present();
 }
+
+fn get_orientation(car: &Car)-> (i32, i32, Cardinal) {
+    let width : i32;
+    let height : i32;
+    let dir : Cardinal;
+
+    match car.direction {
+        Direction::Straight => {
+            match car.from {
+                Cardinal::S => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N}
+                Cardinal::N => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S},
+                Cardinal::W => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E} 
+                Cardinal::E => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W}
+            }
+        }
+        Direction::Right => {
+            match car.turned {
+                false => {
+                    match car.from {
+                        Cardinal::S => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N},
+                        Cardinal::N => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S},
+                        Cardinal::W => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E} 
+                        Cardinal::E => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W}
+                    }
+                } 
+                true => {
+                    match car.from {
+                        Cardinal::S => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E},
+                        Cardinal::N => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W},
+                        Cardinal::W => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S}  
+                        Cardinal::E => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N}
+                    }
+                }
+            }
+        }
+
+        Direction::Left => {
+            match car.turned {
+                false => {
+                    match car.from {
+                        Cardinal::S => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N},
+                        Cardinal::N => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S},
+                        Cardinal::W => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E}
+                        Cardinal::E => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W}
+                    }
+                } 
+                true => {
+                    match car.from {
+                        Cardinal::S  => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W},
+                        Cardinal::N => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E},
+                        Cardinal::W => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S},
+                        Cardinal::E => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N}
+                    }
+                }
+            }
+        }
+                
+        }   
+    return (width, height, dir)
+}
+
+    

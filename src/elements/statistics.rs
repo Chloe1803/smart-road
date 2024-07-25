@@ -26,8 +26,8 @@ impl Statitics {
 
         stats = format!("Statistics :
         Max number of vehicles that passed the intersection : {}
-        Max velocity of all vehicles : {} px/seconds
-        Min velocity of all vehicles : {} px/seconds
+        Max velocity of all vehicles : {:.2} px/seconds
+        Min velocity of all vehicles : {:.2} px/seconds
         Max time that the vehicles took to pass the intersection : {} seconds
         Min time that the vehicles took to pass the intersection : {} seconds
         Close calls : {}", self.max_number_of_vehicules, self.max_velocity, self.min_velocity, self.max_time, self.min_time, self.number_of_colision);

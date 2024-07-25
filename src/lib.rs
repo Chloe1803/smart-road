@@ -5,6 +5,11 @@ use sdl2::EventPump;
 use sdl2::keyboard::Keycode;
 use sdl2::render::Canvas;
 use sdl2::video::Window;
+use sdl2::render::{Texture, TextureCreator};
+use sdl2::video::WindowContext;
+use sdl2::image::LoadTexture;
+
+use std::collections::HashMap;
 
 pub use std::time::Duration;
 
@@ -20,6 +25,8 @@ use draw::*;
 pub fn start_simulation(){
     //génère la fenêtre
     let (mut canvas, mut event_pump) = initiate();
+    let texture_creator = canvas.texture_creator();
+    let sprites = Sprites::new(&texture_creator);
     let mut simulation = Simulation::new();
 
     let mut pause: bool = false;
@@ -53,7 +60,7 @@ pub fn start_simulation(){
 
         simulation.run();
         draw_background(&mut canvas);
-        draw_simulation(&mut canvas, &simulation);
+        draw_simulation(&mut canvas, &simulation, &sprites);
         canvas.present();
 
         // NOTE : this is bad. we should remain time needed to calculate the frame from this sleep duration
@@ -122,4 +129,43 @@ fn handle_inputs(event_pump: &mut EventPump, simulation: &mut Simulation) -> u8 
     return 0;
 }
 
+
+pub struct Sprites<'a> {
+    pub cars: HashMap<u32, Vec<Texture<'a>>>
+}
+
+impl<'a> Sprites<'a> {
+    pub fn new(texture_creator: &'a TextureCreator<WindowContext>) -> Sprites<'a> {
+        // pub fn new(canvas: Canvas<Window>) -> Sprites<'a> {
+        // let texture_creator: TextureCreator<WindowContext> = canvas.texture_creator();
+        let mut cars = HashMap::<u32, Vec<Texture<'a>>>::new();
+
+        let mut i = 1;
+        for id in ["a","b","c"] {
+            let mut textures = vec![];
+            for j in 1..5 {
+                let file_name = format!("assets/img/car_{}_{}.png", id, j);
+                textures.push(texture_creator.load_texture(file_name).unwrap());
+            }
+            cars.insert(i, textures);
+            i+=1;
+        }
+
+        return Sprites{cars};
+
+        // let texture = texture_creator.load_texture("./assets/car2-left.png").unwrap();
+        // canvas.copy(&texture, None, Rect::new(50,50,42,23)).unwrap();
+    }
+
+    pub fn get_car_sprite(&self, id: u32, dir: Cardinal) -> &Texture {
+        let dir_id = match dir {
+            Cardinal::W => 0,
+            Cardinal::N => 1,
+            Cardinal::E => 2,
+            Cardinal::S => 3
+        };
+        // canvas.copy(&self.cars.get(&id).unwrap()[dir_id], None, rect);
+        return &self.cars.get(&id).unwrap()[dir_id];
+    }
+}
 

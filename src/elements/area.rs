@@ -32,7 +32,7 @@ impl LockedArea {
         }
     }
 
-    pub fn update_queue(&mut self,  cars_crossing: &Vec<(Rc<RefCell<Car>>, Vec<(usize, usize)>)>) {
+    pub fn update_queue(&mut self,  cars_crossing: &Vec<(Rc<RefCell<Car>>, usize, Vec<(usize, usize)>)>) {
 
         //si la zone n'est pas réservé donc pas de mise a jour à faire
         if self.tickets.is_empty() && self.current_ticket.is_none() {
@@ -43,7 +43,7 @@ impl LockedArea {
         if let Some((current_car_id, has_passed)) = self.current_ticket {
             
             //récupération de la voiture qui est en train de traverser si elle est dans la liste des crossing_cars
-            if let Some((current_car, _)) = cars_crossing.iter().find(|(car, _)| car.borrow().id == current_car_id) {
+            if let Some((current_car, _, _)) = cars_crossing.iter().find(|(car, _, _)| car.borrow().id == current_car_id) {
                 let current_car = current_car.borrow();
 
                 //si la voiture est pas dans la zone et est passé
@@ -56,16 +56,19 @@ impl LockedArea {
                     //mettre la valeur à jour de has passed pour dire que la voiture est bien passé
                     
                     self.current_ticket = Some((current_car_id, true));
-                }
-            }else{
-                //si la voiture n'est pas dans la liste des voitures en train de traverser, vérifie que c'est bien le ticket le plus ancien qui est current        
-                if let Some(&min_id)= self.tickets.iter().min() {
-                    if min_id < current_car_id {
-                        self.current_ticket = Some((min_id, false));
-                        self.tickets.push(current_car_id);
-                        self.tickets.retain(|&x| x != min_id);
+                
+                }else if !current_car.is_in_intersection(&self.area) && !has_passed{
+                    //si la voiture n'est pas dans la liste des voitures en train de traverser, vérifie que c'est bien le ticket le plus ancien qui est current
+                    if let Some(&min_id)= self.tickets.iter().min() {
+                        if min_id < current_car_id {
+                            self.current_ticket = Some((min_id, false));
+                            self.tickets.push(current_car_id);
+                            self.tickets.retain(|&x| x != min_id);
+                        }
                     }
                 }
+            }else{
+                self.current_ticket = None;
             }
 
 

@@ -6,8 +6,7 @@ use std::cell::RefCell;
 
 pub struct SmartIntersectionSystem{
     pub area : Rect,
-    pub cars_waiting: Vec<(Rc<RefCell<Car>>, Vec<(usize, usize)>)>,
-    pub cars_crossing: Vec<(Rc<RefCell<Car>>, Vec<(usize, usize)>)>,
+    pub cars_crossing: Vec<(Rc<RefCell<Car>>, usize, Vec<(usize, usize)>)>,
     pub locked_areas : Vec<Vec<LockedArea>>
 }
 
@@ -40,7 +39,6 @@ impl  SmartIntersectionSystem  {
 
         SmartIntersectionSystem {
             area,
-            cars_waiting: Vec::new(),
             cars_crossing: Vec::new(),
             locked_areas, 
         }
@@ -55,7 +53,7 @@ impl  SmartIntersectionSystem  {
 
         car.borrow_mut().running = false;
 
-        self.cars_waiting.push((car, routes));
+        self.cars_crossing.push((car, 0, routes));
     }
 
     pub fn manage_intersection(&mut self){
@@ -75,35 +73,47 @@ impl  SmartIntersectionSystem  {
     }
 
     pub fn update_cars(&mut self){
-        let mut cars_to_move = Vec::new();
-        
-        // Itére sur toutes les voitures en attente
+       let mut cars_to_move = vec![];
 
-        for (i, (car, routes)) in self.cars_waiting.iter().enumerate() {
+        // Itére sur toutes les voitures en attente
+        for (i, (car, current_route, routes)) in &mut self.cars_crossing.iter_mut().enumerate() {
 
             
-            // Vérifie si la voiture peut traverser toutes les zones verrouillées
-            if routes.iter().all(|&(x, y)| {
-                if let Some((current_car_id, _)) = self.locked_areas[x][y].current_ticket {
-                    current_car_id == car.borrow().id      
-                } else {
-                    false
-                }
-            }) {
+
+            if *current_route == routes.len(){
                 cars_to_move.push(i);
+                car.borrow_mut().running = true;
+                continue;
+            }
+            
+            let route = &self.locked_areas[routes[*current_route].0][routes[*current_route].1];
+
+            // if car.borrow().running == false {
+            //     println!("Car {} stopped waiting for route {:?} : current {:?}, tickets : {:?}", car.borrow().id, routes[*current_route], route.current_ticket, route.tickets )
+            // }
+
+            if let Some((ticket_id, has_passed)) = route.current_ticket {
+                if ticket_id == car.borrow().id && !has_passed {
+                    car.borrow_mut().running = true;
+                }
+                if ticket_id == car.borrow().id && has_passed {
+                    car.borrow_mut().running = false;
+                     *current_route +=1;
+                }
+                if ticket_id != car.borrow().id {
+                    car.borrow_mut().running = false;
+                }
             }
         }
 
         for &i in cars_to_move.iter().rev() {
-            let (car, routes) = self.cars_waiting.remove(i);
-        
-            car.borrow_mut().running = true;
-            self.cars_crossing.push((car, routes));
+            self.cars_crossing.remove(i);
         }
+        
     }
     
     pub fn car_exiting(&mut self, car: Rc<RefCell<Car>>){
-        self.cars_crossing.retain(|(c, _)| c.borrow().id != car.borrow().id);
+        self.cars_crossing.retain(|(c, _, _)| c.borrow().id != car.borrow().id);
     }
 
 }
@@ -128,6 +138,16 @@ fn get_route(from: Cardinal, direction : Direction)-> Vec<(usize, usize)>{
             }
         }
         Direction::Right => return vec![]
+    }
+}
+
+fn is_critical_route(route :(usize, usize))-> bool {
+    match route {
+        (1,1)=> true,
+        (1,2)=> true,
+        (2,1)=> true,
+        (2,2)=> true,
+        _=> false
     }
 }
 

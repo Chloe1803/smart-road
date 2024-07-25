@@ -11,7 +11,6 @@ pub const SECONDARY_DASH_LENGTH: i32 = 10;  //Trait qui découpe la route en tro
 pub const CAR_SIZE: i32 = 20;
 pub const CAR_WIDTH : i32 = 20;
 pub const CAR_LENGTH : i32 = 20;               // car size in px
-pub const CAR_SPEED: i32 = 6;               // car speed in px per frame
 pub const SECURITY_LIMIT: i32 = 10;         // mandatory distance between cars in px
 
 pub const SPEED_SLOW : i32 = 2;

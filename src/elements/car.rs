@@ -1,12 +1,14 @@
 use crate::{constants::*, Cardinal, Direction};
 use crate::elements::area::*;
+use std::time::{Duration, Instant};
 
 #[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
 pub struct Car {
     pub id: usize,
     pub from: Cardinal,       
     pub to: Cardinal,
-    pub direction : Direction,          
+    pub direction : Direction,  
+    pub speed : i32,        
     pub pos: (i32, i32),        // current car position
     pub turning_point : (i32, i32), //position of when to turn
     pub running: bool,          // car is allowed to move this frame
@@ -14,6 +16,8 @@ pub struct Car {
     pub passed: bool,
     pub was_in_intersection : bool,
     pub color: u8,              // car color according to Cardinals from and to
+    pub timestamp: Option<Instant>,
+    pub distance : i32
 }
 
 impl Car {
@@ -26,7 +30,7 @@ impl Car {
         let turn_x : i32;
         let turn_y : i32; 
 
-        let direction = Direction::random();
+        let direction = Direction::Right;
         let cardinal_to : Cardinal;
 
         // calculate initial position
@@ -131,19 +135,30 @@ impl Car {
         } else {
             color = 2;
         }
+        //speed
+        let speed:i32;
+        match direction {
+            Direction::Right => speed = SPEED_SLOW,
+            Direction::Left => speed = SPEED_FAST,
+            Direction::Straight => speed = SPEED_MEDIUM
+        }
 
         return Car{
             id,
             from,
             to: cardinal_to,
             direction,
+            speed,
             pos,
             turning_point,
             running: true,
             was_in_intersection : false,
             passed: false,
             turned: Cardinal::opposite(from, cardinal_to), // turned is set to true if Cardinals are opposite
-            color};
+            color,
+            timestamp: Some(Instant::now()),
+            distance :0
+        };
     }
 
     // returns distance between those cars. 
@@ -161,22 +176,22 @@ impl Car {
         if !self.running  {
             return;
         }
-
+        self.distance += self.speed;
         if self.turned {
             // car passed its turn point. it should go toward its "to" Cardinal
             match self.to {
-                Cardinal::N => {self.pos.1 -= CAR_SPEED;}
-                Cardinal::S => {self.pos.1 += CAR_SPEED;}
-                Cardinal::W => {self.pos.0 -= CAR_SPEED;}
-                Cardinal::E => {self.pos.0 += CAR_SPEED;}
+                Cardinal::N => {self.pos.1 -= self.speed;}
+                Cardinal::S => {self.pos.1 += self.speed;}
+                Cardinal::W => {self.pos.0 -= self.speed;}
+                Cardinal::E => {self.pos.0 += self.speed;}
             }
         } else {
             // car should move away from its "from" Cardinal
             match self.from {
-                Cardinal::N => {self.pos.1 += CAR_SPEED;}
-                Cardinal::S => {self.pos.1 -= CAR_SPEED;}
-                Cardinal::W => {self.pos.0 += CAR_SPEED;}
-                Cardinal::E => {self.pos.0 -= CAR_SPEED;}
+                Cardinal::N => {self.pos.1 += self.speed;}
+                Cardinal::S => {self.pos.1 -= self.speed;}
+                Cardinal::W => {self.pos.0 += self.speed;}
+                Cardinal::E => {self.pos.0 -= self.speed;}
             }
         }
         // check if car passed its turn point
@@ -215,15 +230,7 @@ impl Car {
         }
     }
 
-    // true if car passed the intersection and doesn't need to be considered anymore
-    // pub fn is_passed(&self) -> bool {
-    //     match self.to {
-    //         Cardinal::N => self.pos.1 <= HEIGHT/2 - 2*ROAD_WIDTH,
-    //         Cardinal::S => self.pos.1 >= HEIGHT/2 + 2*ROAD_WIDTH,
-    //         Cardinal::W => self.pos.0 <= WIDTH/2 - 2*ROAD_WIDTH,
-    //         Cardinal::E => self.pos.0 >= WIDTH/2 + 2*ROAD_WIDTH
-    //     }
-    // }
+
 
     pub fn get_rect(&self) -> Rect {
         Rect {
@@ -247,7 +254,5 @@ impl Car {
         return run_car.pos;
     }
 
-//     pub fn is_in_intersection(&self)->bool{
 
-//     }
  }

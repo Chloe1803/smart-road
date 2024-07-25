@@ -1,6 +1,5 @@
 extern crate sdl2; 
 
-
 use sdl2::event::Event;
 use sdl2::EventPump;
 use sdl2::keyboard::Keycode;
@@ -24,6 +23,7 @@ pub fn start_simulation(){
     let mut simulation = Simulation::new();
 
     let mut pause: bool = false;
+    let mut show_stats : bool = false;
 
      // main loop
      'running: loop {
@@ -37,7 +37,17 @@ pub fn start_simulation(){
             pause = !pause;
         }
 
+        if input == 3 {
+            show_stats = true;
+        }
+
         if pause {
+            continue 'running;
+        }
+
+        if show_stats {
+            draw_stats(&mut &mut canvas, simulation.stats.get_stats());
+            canvas.present();
             continue 'running;
         }
 
@@ -77,10 +87,12 @@ fn handle_inputs(event_pump: &mut EventPump, simulation: &mut Simulation) -> u8 
     for event in event_pump.poll_iter() {
         let mut direction_opt: Option<Cardinal> = None;
         match event {
-            Event::Quit {..} |
-            Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+            Event::Quit {..} => {
                 return 2;
             },
+            Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                return 3;
+            }
             Event::KeyDown { keycode: Some(Keycode::Space), .. } => {
                 return 1;
             },

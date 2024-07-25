@@ -3,12 +3,15 @@ use crate::constants::*;
 use crate::elements::simulation::*;
 use crate::elements::car::*;
 
+
 extern crate sdl2; 
 
 use sdl2::pixels::Color;
 use sdl2::rect::{Point, Rect};
 use sdl2::render::Canvas;
+
 use sdl2::video::Window;
+use std::path::Path;
 
 // draw simulation background
 pub fn draw_background(canvas: &mut Canvas<Window>) {
@@ -101,4 +104,36 @@ fn draw_dashed_line(canvas: &mut sdl2::render::Canvas<sdl2::video::Window>, star
     }
     
     Ok(())
+}
+
+pub fn draw_stats(canvas: &mut Canvas<Window>, stats: String) {
+    let ttf_context = sdl2::ttf::init().unwrap();
+    let font_path = "assets/font/Roboto-Black.ttf";
+    let font = ttf_context.load_font(font_path, 20).unwrap();
+
+    // Clear the canvas
+    canvas.set_draw_color(Color::RGBA(0, 0, 0, 255));
+    canvas.clear();
+
+    // Split the stats string into lines
+    let lines: Vec<&str> = stats.split('\n').collect();
+    let mut y_offset = 100;
+
+    for line in lines {
+        // Render each line to a surface, and then create a texture from it
+        let surface = font.render(line)
+            .blended(Color::RGBA(255, 255, 255, 255))
+            .unwrap();
+        let texture_creator = canvas.texture_creator();
+        let texture = texture_creator.create_texture_from_surface(&surface).unwrap();
+
+        // Copy the texture to the canvas
+        canvas.copy(&texture, None, Some(Rect::new(100, y_offset, surface.width(), surface.height()))).unwrap();
+
+        // Increment y_offset for the next line
+        y_offset += surface.height() as i32 + 5; // Adjust the spacing between lines if necessary
+    }
+
+    // Present the canvas
+    canvas.present();
 }

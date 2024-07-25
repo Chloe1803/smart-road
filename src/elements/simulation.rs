@@ -5,11 +5,14 @@ use crate::elements::car::*;
 use crate::elements::smart_intersection_system::*;
 use crate::elements::direction::*;
 use crate::constants::*;
+
+use super::statistics::Statitics;
 pub struct Simulation{
     pub cars: Vec<Rc<RefCell<Car>>>,                 // cars that didn't pass the crossroad
     pub nb_cars : usize,
     pub smart_intersection_system: SmartIntersectionSystem,    // implements the light strategy
     frame_count: u32,                   // frame count for auto spawning cars
+    pub stats : Statitics
 }
 
 impl Simulation {
@@ -18,7 +21,8 @@ impl Simulation {
             nb_cars : 0,
             cars: vec![],
             smart_intersection_system: SmartIntersectionSystem::new(),
-            frame_count: 0
+            frame_count: 0,
+            stats : Statitics::new()
         };
     }
 
@@ -46,8 +50,31 @@ impl Simulation {
                     }
                 }
             }
+
+            if (car.borrow().passed && car.borrow().is_out()) || (car.borrow().direction == Direction::Right && car.borrow().is_out()) {
+                let exiting_time = car.borrow().timestamp.unwrap().elapsed().as_secs() as usize;
+
+                if exiting_time < self.stats.min_time {
+                    self.stats.min_time = exiting_time
+                }
+
+                if exiting_time > self.stats.max_time {
+                    self.stats.max_time = exiting_time
+                }
+
+                let velocity = car.borrow().distance as f64 /exiting_time as f64;
+                if velocity < self.stats.min_velocity {
+                    self.stats.min_velocity = velocity
+                }
+
+                if velocity > self.stats.max_velocity {
+                    self.stats.max_velocity = velocity
+                }
+
+                println!("time : {}, distance: {}", exiting_time, car.borrow().distance);
+            }
         }
-       
+        
        
         self.cars.retain(|car| !(car.borrow().passed && car.borrow().is_out()));
         
@@ -58,6 +85,7 @@ impl Simulation {
     pub fn add_car(&mut self, from: Cardinal) {
         let new_car = Rc::new(RefCell::new(Car::new(from, self.nb_cars)));
         self.nb_cars +=1;
+        self.stats.max_number_of_vehicules +=1;
         for car in &self.cars {
             if new_car.borrow().distance(&car.borrow()) < SECURITY_LIMIT {
                 return;

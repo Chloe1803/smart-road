@@ -149,28 +149,28 @@ fn get_orientation(car: &Car)-> (i32, i32, Cardinal) {
     match car.direction {
         Direction::Straight => {
             match car.from {
-                Cardinal::S => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N}
-                Cardinal::N => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S},
-                Cardinal::W => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E} 
-                Cardinal::E => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W}
+                Cardinal::S => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::N}
+                Cardinal::N => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::S},
+                Cardinal::W => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::E} 
+                Cardinal::E => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::W}
             }
         }
         Direction::Right => {
             match car.turned {
                 false => {
                     match car.from {
-                        Cardinal::S => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N},
-                        Cardinal::N => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S},
-                        Cardinal::W => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E} 
-                        Cardinal::E => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W}
+                        Cardinal::S => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::N},
+                        Cardinal::N => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::S},
+                        Cardinal::W => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::E} 
+                        Cardinal::E => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::W}
                     }
                 } 
                 true => {
                     match car.from {
-                        Cardinal::S => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E},
-                        Cardinal::N => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W},
-                        Cardinal::W => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S}  
-                        Cardinal::E => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N}
+                        Cardinal::S => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::E},
+                        Cardinal::N => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::W},
+                        Cardinal::W => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::S}  
+                        Cardinal::E => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::N}
                     }
                 }
             }
@@ -180,18 +180,18 @@ fn get_orientation(car: &Car)-> (i32, i32, Cardinal) {
             match car.turned {
                 false => {
                     match car.from {
-                        Cardinal::S => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N},
-                        Cardinal::N => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S},
-                        Cardinal::W => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E}
-                        Cardinal::E => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W}
+                        Cardinal::S => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::N},
+                        Cardinal::N => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::S},
+                        Cardinal::W => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::E}
+                        Cardinal::E => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::W}
                     }
                 } 
                 true => {
                     match car.from {
-                        Cardinal::S  => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::W},
-                        Cardinal::N => {width = CAR_LENGTH; height = CAR_WIDTH; dir = Cardinal::E},
-                        Cardinal::W => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::S},
-                        Cardinal::E => {width = CAR_WIDTH; height = CAR_LENGTH; dir = Cardinal::N}
+                        Cardinal::S  => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::W},
+                        Cardinal::N => {width = CAR_LENGTH-10; height = CAR_WIDTH-10; dir = Cardinal::E},
+                        Cardinal::W => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::N},
+                        Cardinal::E => {width = CAR_WIDTH-10; height = CAR_LENGTH-10; dir = Cardinal::S}
                     }
                 }
             }

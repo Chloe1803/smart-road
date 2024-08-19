@@ -131,9 +131,9 @@ impl Car {
         //speed
         let speed:i32;
         match direction {
-            Direction::Right => {speed = SPEED_SLOW; color= 1}
+            Direction::Right => {speed = SPEED_MEDIUM; color= 1}
             Direction::Left => {speed = SPEED_FAST; color = 2 }
-            Direction::Straight => {speed = SPEED_MEDIUM; color = 3}
+            Direction::Straight => {speed = SPEED_SLOW; color = 3}
         }
 
         return Car{

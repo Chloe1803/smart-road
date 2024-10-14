@@ -56,7 +56,7 @@ impl Simulation {
             }
             
 
-            if (car.borrow().passed && car.borrow().is_out())  {
+            if car.borrow().passed && car.borrow().is_out()  {
                 let exiting_time = car.borrow().timestamp.unwrap().elapsed().as_secs() as usize;
 
                 if exiting_time < self.stats.min_time {
@@ -104,7 +104,6 @@ impl Simulation {
     // checks all cars and stops those that are too close to each others
     // we decide to stop a car if its next position is within an other car's security range,
     // and if the distance between those cars was actually reduced after moving.
-    // NOTE : not the best way to do that
     pub fn check_security_limit(&self) {
         for i in 0..self.cars.len() {
             let mut car = self.cars[i].borrow_mut();

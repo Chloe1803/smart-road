@@ -23,7 +23,7 @@ use constants::*;
 use draw::*;
 
 pub fn start_simulation(){
-    //génère la fenêtre
+    // Génère la fenêtre
     let (mut canvas, mut event_pump) = initiate();
     let texture_creator = canvas.texture_creator();
     let sprites = Sprites::new(&texture_creator);
@@ -32,10 +32,10 @@ pub fn start_simulation(){
     let mut pause: bool = false;
     let mut show_stats : bool = false;
 
-     // main loop
-     'running: loop {
+    // Boucle principale
+    'running: loop {
 
-        // gère les inputs utilisateurs
+        // Gère les inputs utilisateurs
         let input = handle_inputs(&mut event_pump, &mut simulation);
         if input == 2 {
             break 'running;
@@ -63,14 +63,19 @@ pub fn start_simulation(){
         draw_simulation(&mut canvas, &simulation, &sprites);
         canvas.present();
 
-        // NOTE : this is bad. we should remain time needed to calculate the frame from this sleep duration
-        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / FPS));
+        // Calcule le temps pris pour le frame et ajuste la durée de sommeil en conséquence
+        let frame_duration = Duration::new(0, 1_000_000_000u32 / FPS);
+        let frame_start = std::time::Instant::now();
+
+        // Dort pour le temps restant afin de maintenir le FPS cible
+        let elapsed = frame_start.elapsed();
+        if elapsed < frame_duration {
+            ::std::thread::sleep(frame_duration - elapsed);
+        }
      }
 }
 
-
-
-// initiates canvas and eventpump
+// Initialise le canvas et l'event pump
 fn initiate() -> (Canvas<Window>, EventPump) {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
@@ -86,10 +91,8 @@ fn initiate() -> (Canvas<Window>, EventPump) {
     return (canvas, event_pump);
 }
 
-
-//Sert à généré les inputs utilisateurs 
-// apply events from user input to the simulation
-// returns 2 if program should stop and 1 if program should pause
+// Gère les inputs utilisateurs et applique les événements à la simulation
+// Retourne 2 si le programme doit s'arrêter et 1 si le programme doit se mettre en pause
 fn handle_inputs(event_pump: &mut EventPump, simulation: &mut Simulation) -> u8 {
     for event in event_pump.poll_iter() {
         let mut direction_opt: Option<Cardinal> = None;
@@ -129,15 +132,12 @@ fn handle_inputs(event_pump: &mut EventPump, simulation: &mut Simulation) -> u8 
     return 0;
 }
 
-
 pub struct Sprites<'a> {
     pub cars: HashMap<u32, Vec<Texture<'a>>>
 }
 
 impl<'a> Sprites<'a> {
     pub fn new(texture_creator: &'a TextureCreator<WindowContext>) -> Sprites<'a> {
-        // pub fn new(canvas: Canvas<Window>) -> Sprites<'a> {
-        // let texture_creator: TextureCreator<WindowContext> = canvas.texture_creator();
         let mut cars = HashMap::<u32, Vec<Texture<'a>>>::new();
 
         let mut i = 1;
@@ -152,9 +152,6 @@ impl<'a> Sprites<'a> {
         }
 
         return Sprites{cars};
-
-        // let texture = texture_creator.load_texture("./assets/car2-left.png").unwrap();
-        // canvas.copy(&texture, None, Rect::new(50,50,42,23)).unwrap();
     }
 
     pub fn get_car_sprite(&self, id: u32, dir: Cardinal) -> &Texture {
@@ -164,8 +161,6 @@ impl<'a> Sprites<'a> {
             Cardinal::E => 2,
             Cardinal::S => 3
         };
-        // canvas.copy(&self.cars.get(&id).unwrap()[dir_id], None, rect);
         return &self.cars.get(&id).unwrap()[dir_id];
     }
 }
-

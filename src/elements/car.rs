@@ -1,6 +1,6 @@
 use crate::{constants::*, Cardinal, Direction};
 use crate::elements::area::*;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 #[derive(Debug, PartialEq, PartialOrd, Copy, Clone)]
 pub struct Car {

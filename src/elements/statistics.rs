@@ -1,4 +1,4 @@
-use crate::constants::*;
+
 
 pub struct Statitics {
     pub max_number_of_vehicules : usize,
@@ -22,9 +22,8 @@ impl Statitics {
     }
 
     pub fn get_stats(&self)-> String {
-        let mut stats = String::new();
 
-        stats = format!("Statistics :
+        let stats = format!("Statistics :
         Max number of vehicles that passed the intersection : {}
         Max velocity of all vehicles : {:.2} px/seconds
         Min velocity of all vehicles : {:.2} px/seconds

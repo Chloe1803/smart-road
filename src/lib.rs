@@ -62,9 +62,14 @@ pub fn start_simulation(){
         draw_background(&mut canvas);
         draw_simulation(&mut canvas, &simulation, &sprites);
         canvas.present();
+    
+        let frame_start = std::time::Instant::now();
 
-        // NOTE : this is bad. we should remain time needed to calculate the frame from this sleep duration
-        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / FPS));
+        let frame_duration = Duration::new(0, 1_000_000_000u32 / FPS);
+        let elapsed = frame_start.elapsed();
+        if elapsed < frame_duration {
+            ::std::thread::sleep(frame_duration - elapsed);
+        }
      }
 }
 
